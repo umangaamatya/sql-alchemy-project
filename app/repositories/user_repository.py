@@ -18,31 +18,31 @@ def add_user_details(first_name, last_name, email):
 
 
 def get_user(id):
-    stmt = select(User).where(User.id == id)
-    user = session.execute(stmt).scalars().first()
+    user = session.query(User).filter(User.id == id).first()
 
-    return {
-        'ID': user.id,
-        'First Name': user.first_name,
-        'Last Name': user.last_name,
-        'Email': user.email
-    }
+    if user:
+        return {
+            'ID': user.id,
+            'First Name': user.first_name,
+            'Last Name': user.last_name,
+            'Email': user.email
+        }
+    else:
+        return {'error': 'User not found'}
 
 
 def get_all_users():
-    stmt = select(User).order_by(User.id)
-    result = session.execute(stmt).scalars()
-    user_list = []
+    users = session.query(User).order_by(User.id).all()
+    user_list = [
+        {
+            'ID': user.id,
+            'First Name': user.first_name,
+            'Last Name': user.last_name,
+            'Email': user.email
+        }
+        for user in users
+    ]
 
-    for user in result:
-        user_list.append(
-            {
-                'ID': user.id,
-                'First Name': user.first_name,
-                'Last Name': user.last_name,
-                'Email': user.email
-            }
-        )
     return user_list
 
 

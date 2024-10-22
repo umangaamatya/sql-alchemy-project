@@ -46,5 +46,21 @@ def get_all_users():
     return user_list
 
 
-def del_user():
-    return
+def del_user(user_id):
+    user = session.query(User).filter(User.id == user_id).first()
+
+    if user:
+        user_details = {
+            'ID': user.id,
+            'First Name': user.first_name,
+            'Last Name': user.last_name,
+            'Email': user.email
+        }
+
+        session.query(User).filter(User.id == user_id).delete()
+        session.commit()
+
+        return user_details
+    else:
+        return {'error': 'User not found'}
+

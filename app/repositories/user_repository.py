@@ -64,3 +64,22 @@ def del_user(user_id):
     else:
         return {'error': 'User not found'}
 
+
+def update_user(user_id):
+    user = session.query(User).filter(User.id == user_id).first()
+
+    if user:
+        user_input = input("What field would you like to update? [f: First Name, l: Last Name, e: Email]"
+                           "Enter: ")
+        match user_input:
+            case 'f':
+                first_name = input("Please enter the first name: ")
+                # Should I change the variable name?
+                session.query(User).update(user).where(user.user_id == user_id).values(first_name=first_name)
+            case 'l':
+                last_name = input("Please enter the last name: ")
+                session.query(User).update(user).where(user.user_id == user_id).values(last_name=last_name)
+            case 'e':
+                email = input("Please enter the last name: ")
+                session.query(User).update(user).where(user.user_id == user_id).values(email=email)
+

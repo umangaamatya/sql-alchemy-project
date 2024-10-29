@@ -17,8 +17,22 @@ def add_user_details(first_name, last_name, email):
     }
 
 
-def get_user(id):
-    user = session.query(User).filter(User.id == id).first()
+def add_multiple_users(users):
+    user_list = []
+
+    for user in users:
+        user_details = User(first_name=user["first_name"], last_name=user["last_name"], email=user["email"])
+        user_list.append(user_details)
+
+    session.add_all(user_list)
+    session.commit()
+    session.refresh(user_list)
+
+    return user_list
+
+
+def get_user(user_id):
+    user = session.query(User).filter(User.id == user_id).first()
 
     if user:
         return {
@@ -71,12 +85,19 @@ def update_user(user_id, first_name=None, last_name=None, email=None):
     if not user:
         return f"User with ID {user_id} does not exist"
 
-    updates = {k: v for k, v in {'first_name': first_name,
-                                 'last_name': last_name,
-                                 'email': email}.items()
-               if v is not None}
+    data = {'first_name': first_name, 'last_name': last_name, 'email': email}
 
-    if updates:
-        session.query(User).filter(User.id == user_id).update(updates)
-        session.commit()
-        return f"User with ID {user_id} has been updated."
+    updates = {k: v for k, v in data.items() if v is not None}
+
+    session.query(User).filter(User.id == user_id).update(updates)
+    session.commit()
+    session.refresh(user)
+
+    user_details = {
+        'ID': user.id,
+        'First Name': user.first_name,
+        'Last Name': user.last_name,
+        'Email': user.email
+    }
+
+    return user_details

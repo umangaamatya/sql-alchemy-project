@@ -26,7 +26,9 @@ def add_multiple_users(users):
 
     session.add_all(user_list)
     session.commit()
-    session.refresh(user_list)
+
+    for user in user_list:
+        session.refresh(user)
 
     return user_list
 
